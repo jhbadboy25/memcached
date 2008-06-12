@@ -201,7 +201,7 @@ static void settings_init(void) {
     settings.factor = 1.25;
     settings.chunk_size = 48;         /* space for a modest key and value */
 #ifdef USE_THREADS
-    settings.num_threads = 4 + 1      /* N workers + 1 dispatcher */;
+    settings.num_threads = 4 + 1;     /* N workers + 1 dispatcher */
 #else
     settings.num_threads = 1;
 #endif
@@ -3052,7 +3052,7 @@ static int server_socket(const int port, const bool is_udp, const bool is_binary
             int c;
             conn_states_t initial_state = is_binary ? conn_bp_header_size_unknown : conn_read;
 
-            for (c = 0; c < settings.num_threads; c++) {
+            for (c = 1; c < settings.num_threads; c++) {
                 /* this is guaranteed to hit all threads because we round-robin */
                 dispatch_conn_new(sfd, initial_state, EV_READ | EV_PERSIST,
                                   UDP_READ_BUFFER_SIZE, is_udp, is_binary, NULL, 0);
@@ -3444,7 +3444,7 @@ int main (int argc, char **argv) {
     setbuf(stderr, NULL);
 
     /* process arguments */
-    while ((c = getopt(argc, argv, "a:bp:s:U:m:Mc:khirvdl:u:P:f:s:n:t:D:Ln:N:R:")) != -1) {
+    while ((c = getopt(argc, argv, "a:bp:s:U:m:Mc:khirvdl:u:P:f:s:t:D:Ln:N:R:")) != -1) {
         switch (c) {
         case 'a':
             /* access for unix domain socket, as octal mask (like chmod)*/
